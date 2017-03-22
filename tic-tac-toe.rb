@@ -56,6 +56,72 @@ class Board
     coordinates[1].to_i - 1
   end
 
+  def check_for_winner(last_player)
+    check_rows(last_player)
+    check_columns(last_player)
+    check_diagonals(last_player)
+  end
+
+  def check_rows(last_player)
+    grid.each_value do |row|
+      the_winner_is(last_player) if row.all? { |mark| mark == last_player.mark }
+    end
+  end
+
+  def check_columns(last_player)
+    array = []
+
+    3.times do |mark|
+      grid.each_key do |row|
+        array << !!grid[row][mark] if grid[row][mark] == last_player.mark
+      end
+
+      break if array.length == 3
+
+      array = []
+      mark += 1
+    end
+
+    the_winner_is(last_player) if array.length == 3 && array.all?
+  end
+
+  def check_diagonals(last_player)
+    array = []
+
+    3.times do |mark|
+      grid.each_key do |row|
+        array << !!grid[row][mark] if grid[row][mark] == last_player.mark
+        mark += 1
+      end
+
+      break if array.length == 3
+
+      array = []
+    end
+
+    if array.length < 3
+      array = []
+
+      3.times do |mark|
+        grid.map { |key, _value| key }.reverse.each do |row|
+          array << !!grid[row][mark] if grid[row][mark] == last_player.mark
+          mark += 1
+        end
+
+        break if array.length == 3
+
+        array = []
+      end
+    end
+
+    the_winner_is(last_player) if array.length == 3 && array.all?
+  end
+
+  def the_winner_is(last_player)
+    puts " #{last_player.name} wins!\n\n"
+    exit
+  end
+
   def print_board
     system "clear" or system "cls"
     puts "\n"
@@ -85,6 +151,7 @@ class Game
       puts "Introduce a position:"
       input = STDIN.gets.chomp
       human.throw(input, board)
+      board.check_for_winner(human)
     end
   end
 end
