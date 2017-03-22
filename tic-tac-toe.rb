@@ -8,6 +8,21 @@
 #
 # Wikipedia: https://en.wikipedia.org/wiki/Tic-tac-toe
 
+require 'pry'
+
+class Player
+  attr_reader :name, :mark
+
+  def initialize(name, mark)
+    @name = name
+    @mark = mark
+  end
+
+  def throw(coordinates, board)
+    board.place_mark(mark, coordinates)
+  end
+end
+
 class Board
   attr_accessor :grid
 
@@ -55,26 +70,24 @@ class Board
   end
 end
 
-class Player
-  attr_reader :name, :mark
+class Game
+  attr_reader :human, :computer, :board
 
-  def initialize(name, mark)
-    @name = name
-    @mark = mark
+  def initialize
+    @human    = Player.new("Human", "X")
+    @computer = Player.new("Computer", "O")
+    @board    = Board.new
   end
 
-  def throw(coordinates, board)
-    board.place_mark(mark, coordinates)
+  def start
+    loop do
+      board.print_board
+      puts "Introduce a position:"
+      input = STDIN.gets.chomp
+      human.throw(input, board)
+    end
   end
 end
 
-board = Board.new
-player1 = Player.new("Player 1", "X")
-
-board.print_board
-
-loop do
-  puts "Introduce a position:"
-  input = STDIN.gets.chomp
-  player1.throw(input, board)
-end
+game = Game.new
+game.start
