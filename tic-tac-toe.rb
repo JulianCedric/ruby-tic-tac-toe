@@ -23,6 +23,12 @@ class Player
   end
 end
 
+class Computer < Player
+  def throw(board)
+    board.place_mark(mark, board.choose_location)
+  end
+end
+
 class Board
   attr_accessor :grid
 
@@ -54,6 +60,18 @@ class Board
 
   def number(coordinates)
     coordinates[1].to_i - 1
+  end
+
+  def choose_location
+    rows     = ["a", "b", "c"]
+    columns  = [0, 1, 2]
+
+    loop do
+      row      = rows.sample
+      column   = columns.sample
+      location = grid[row.to_sym][column]
+      return "#{row}#{column}" if location == "-"
+    end
   end
 
   def check_for_winner(last_player)
@@ -138,7 +156,7 @@ class Game
 
   def initialize
     @human    = Player.new("Human", "X")
-    @computer = Player.new("Computer", "O")
+    @computer = Computer.new("Computer", "O")
     @board    = Board.new
   end
 
@@ -147,6 +165,8 @@ class Game
       board.print_board
       puts "Introduce a position:"
       input = STDIN.gets.chomp
+      computer.throw(board)
+      board.check_for_winner(computer)
       human.throw(input, board)
       board.check_for_winner(human)
     end
