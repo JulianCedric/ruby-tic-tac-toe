@@ -71,15 +71,14 @@ class Board
   def check_columns(last_player)
     array = []
 
-    3.times do |mark|
+    3.times do |column|
       grid.each_key do |row|
-        array << !!grid[row][mark] if grid[row][mark] == last_player.mark
+        array << true if grid[row][column] == last_player.mark
       end
 
       break if array.length == 3
-
       array = []
-      mark += 1
+      column += 1
     end
 
     the_winner_is(last_player) if array.length == 3 && array.all?
@@ -88,28 +87,26 @@ class Board
   def check_diagonals(last_player)
     array = []
 
-    3.times do |mark|
+    3.times do |column|
       grid.each_key do |row|
-        array << !!grid[row][mark] if grid[row][mark] == last_player.mark
-        mark += 1
+        array << true if grid[row][column] == last_player.mark
+        column += 1
       end
 
       break if array.length == 3
-
       array = []
     end
 
     if array.length < 3
       array = []
 
-      3.times do |mark|
+      3.times do |column|
         grid.map { |key, _value| key }.reverse.each do |row|
-          array << !!grid[row][mark] if grid[row][mark] == last_player.mark
-          mark += 1
+          array << true if grid[row][column] == last_player.mark
+          column += 1
         end
 
         break if array.length == 3
-
         array = []
       end
     end
