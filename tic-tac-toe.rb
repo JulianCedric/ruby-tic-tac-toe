@@ -157,6 +157,8 @@ class Board
     check_rows(last_player)
     check_columns(last_player)
     check_diagonals(last_player)
+
+    finish_game if there_is_no_winner
   end
 
   def check_rows(last_player)
@@ -209,6 +211,27 @@ class Board
     end
 
     the_winner_is(last_player) if array.length == 3 && array.all?
+  end
+
+  def there_is_no_winner
+    array = []
+    grid.each_value { |value| array << value }
+
+    empty_slots = array.flatten.join.count("-")
+    empty_slots == 1
+  end
+
+  def finish_game
+    puts "There's no winner. Try again? (Y/N)"
+    input = STDIN.gets.chomp.downcase
+
+    case input
+    when "y"
+      Game.new.start
+    when "n"
+      puts "Thanks for playing. Hope you liked it!"
+      exit
+    end
   end
 
   def the_winner_is(last_player)
