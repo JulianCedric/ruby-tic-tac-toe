@@ -24,8 +24,9 @@ class Player
 end
 
 class Computer < Player
-  def throw(board)
-    board.place_mark(mark, board.choose_location)
+  def throw(board, human_mark)
+    board.place_mark(mark, board.choose_location(mark, human_mark))
+    sleep 1
   end
 end
 
@@ -40,7 +41,9 @@ class Board
 
   def place_mark(mark, coordinates)
     return slot_not_available(coordinates) unless slot_available(coordinates)
+
     grid[letter(coordinates)][number(coordinates)] = mark
+
     print_board
   end
 
@@ -62,7 +65,28 @@ class Board
     coordinates[1].to_i - 1
   end
 
-  def choose_location
+  def choose_location(computer_mark, human_mark)
+    check_rows_computer(computer_mark, human_mark)
+    check_columns_computer
+    # check_diagonals_computer
+  end
+
+  def check_rows_computer(computer_mark, human_mark)
+    grid.each do |row, columns|
+      array = []
+      columns.each { |column| array << column }
+
+      next if array.any?  { |mark| mark == computer_mark }
+      next if array.none? { |mark| mark == human_mark }
+
+      column = array.index("-") + 1
+      return "#{row}#{column}"
+    end
+
+    choose_random_location
+  end
+
+  def choose_random_location
     rows     = ["a", "b", "c"]
     columns  = [0, 1, 2]
 
@@ -165,10 +189,10 @@ class Game
       board.print_board
       puts "Introduce a position:"
       input = STDIN.gets.chomp
-      computer.throw(board)
-      board.check_for_winner(computer)
       human.throw(input, board)
       board.check_for_winner(human)
+      computer.throw(board, human.mark)
+      board.check_for_winner(computer)
     end
   end
 end
