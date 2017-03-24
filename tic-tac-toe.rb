@@ -68,7 +68,7 @@ class Board
   def choose_location(computer_mark, human_mark)
     check_rows_computer(computer_mark, human_mark)
     check_columns_computer(computer_mark, human_mark)
-    # check_diagonals_computer
+    check_diagonals_computer(computer_mark, human_mark)
   end
 
   def check_rows_computer(computer_mark, human_mark)
@@ -100,6 +100,42 @@ class Board
 
       row = rows[array.index("-")]
       return "#{row}#{column + 1}"
+    end
+
+    choose_random_location
+  end
+
+  def check_diagonals_computer(computer_mark, human_mark)
+    rows = ["a", "b", "c"]
+
+    3.times do |column|
+      array = []
+      grid.each_key do |row|
+        array << grid[row][column]
+        column += 1
+      end
+
+      break if array.any?  { |mark| mark == computer_mark }
+      break if array.none? { |mark| mark == human_mark }
+
+      row    = rows[array.index("-")]
+      column = array.index("-") + 1
+      return "#{row}#{column}"
+    end
+
+    3.times do |column|
+      array = []
+      grid.map { |key, _value| key }.reverse.each do |row|
+        array << grid[row][column]
+        column += 1
+      end
+
+      break if array.any?  { |mark| mark == computer_mark }
+      break if array.none? { |mark| mark == human_mark }
+
+      row    = rows[array.index("-")]
+      column = array.index("-") + 1
+      return "#{row}#{column}"
     end
 
     choose_random_location
