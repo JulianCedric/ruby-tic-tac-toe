@@ -217,26 +217,30 @@ class Board
     array = []
     grid.each_value { |value| array << value }
 
-    empty_slots = array.flatten.join.count("-")
-    empty_slots == 1
+    array.flatten.none? { |slot| slot == "-" }
   end
 
   def finish_game
     puts "There's no winner. Try again? (Y/N)"
+    try_again
+  end
+
+  def the_winner_is(last_player)
+    puts "#{last_player.name} wins! Try again? (Y/N)"
+    try_again
+  end
+
+  def try_again
     input = STDIN.gets.chomp.downcase
 
     case input
     when "y"
       Game.new.start
     when "n"
-      puts "Thanks for playing. Hope you liked it!"
+      system "clear" or system "cls"
+      puts "Thanks for playing. Hope you liked it!\n\n"
       exit
     end
-  end
-
-  def the_winner_is(last_player)
-    puts " #{last_player.name} wins!\n\n"
-    exit
   end
 
   def print_board
@@ -275,5 +279,4 @@ class Game
   end
 end
 
-game = Game.new
-game.start
+Game.new.start
