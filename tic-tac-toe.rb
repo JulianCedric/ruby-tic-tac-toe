@@ -222,49 +222,36 @@ class Board
   end
 
   def check_columns(last_player)
-    array = []
-
     3.times do |column|
+      array = []
       grid.each_key do |row|
         array << true if grid[row][column] == last_player.mark
       end
 
-      break if array.length == 3
-      array = []
-      column += 1
+      return the_winner_is(last_player) if array.length == 3 && array.all?
     end
-
-    the_winner_is(last_player) if array.length == 3 && array.all?
   end
 
   def check_diagonals(last_player)
-    array = []
-
     3.times do |column|
+      array = []
       grid.each_key do |row|
         array << true if grid[row][column] == last_player.mark
         column += 1
       end
 
-      break if array.length == 3
-      array = []
+      return the_winner_is(last_player) if array.length == 3
     end
 
-    if array.length < 3
+    3.times do |column|
       array = []
-
-      3.times do |column|
-        grid.map { |key, _value| key }.reverse.each do |row|
-          array << true if grid[row][column] == last_player.mark
-          column += 1
-        end
-
-        break if array.length == 3
-        array = []
+      grid.map { |key, _value| key }.reverse.each do |row|
+        array << true if grid[row][column] == last_player.mark
+        column += 1
       end
-    end
 
-    the_winner_is(last_player) if array.length == 3 && array.all?
+      return the_winner_is(last_player) if array.length == 3
+    end
   end
 
   def there_is_no_winner
