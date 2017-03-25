@@ -59,6 +59,7 @@ class Board
   end
 
   def letter(coordinates)
+    binding.pry
     coordinates[0].to_sym
   end
 
@@ -67,12 +68,21 @@ class Board
   end
 
   def choose_location(computer_mark, human_mark)
-    check_rows_computer(computer_mark, human_mark)
-    check_columns_computer(computer_mark, human_mark)
-    check_diagonals_computer(computer_mark, human_mark)
+    2.times do |iteration|
+      match_in_rows = check_rows_computer(computer_mark, human_mark, iteration)
+      return match_in_rows if match_in_rows
+
+      match_in_columns = check_columns_computer(computer_mark, human_mark, iteration)
+      return match_in_columns if match_in_columns
+
+      match_in_diagonals = check_diagonals_computer(computer_mark, human_mark, iteration)
+      return match_in_diagonals if match_in_diagonals
+    end
+
+    choose_random_location
   end
 
-  def check_rows_computer(computer_mark, human_mark)
+  def check_rows_computer(computer_mark, human_mark, iteration)
     grid.each do |row, columns|
       array = []
       columns.each { |column| array << column }
@@ -80,14 +90,15 @@ class Board
       next if array.any?  { |mark| mark == computer_mark }
       next if array.none? { |mark| mark == human_mark }
 
+      human_marks = array.join.count(human_mark)
+      break if iteration.zero? && human_marks != 2
+
       column = array.index("-") + 1
       return "#{row}#{column}"
     end
-
-    choose_random_location
   end
 
-  def check_columns_computer(computer_mark, human_mark)
+  def check_columns_computer(computer_mark, human_mark, iteration)
     rows = ["a", "b", "c"]
 
     3.times do |column|
@@ -99,14 +110,15 @@ class Board
       next if array.any?  { |mark| mark == computer_mark }
       next if array.none? { |mark| mark == human_mark }
 
+      human_marks = array.join.count(human_mark)
+      break if iteration.zero? && human_marks != 2
+
       row = rows[array.index("-")]
       return "#{row}#{column + 1}"
     end
-
-    choose_random_location
   end
 
-  def check_diagonals_computer(computer_mark, human_mark)
+  def check_diagonals_computer(computer_mark, human_mark, iteration)
     rows = ["a", "b", "c"]
 
     3.times do |column|
@@ -118,6 +130,9 @@ class Board
 
       break if array.any?  { |mark| mark == computer_mark }
       break if array.none? { |mark| mark == human_mark }
+
+      human_marks = array.join.count(human_mark)
+      break if iteration.zero? && human_marks != 2
 
       row    = rows[array.index("-")]
       column = array.index("-") + 1
@@ -134,12 +149,13 @@ class Board
       break if array.any?  { |mark| mark == computer_mark }
       break if array.none? { |mark| mark == human_mark }
 
+      human_marks = array.join.count(human_mark)
+      break if iteration.zero? && human_marks != 2
+
       row    = rows[array.index("-")]
       column = array.index("-") + 1
       return "#{row}#{column}"
     end
-
-    choose_random_location
   end
 
   def choose_random_location
