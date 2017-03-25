@@ -19,13 +19,13 @@ class Player
   end
 
   def throw(coordinates, board)
-    board.place_mark(mark, coordinates)
+    board.place_mark(self, mark, coordinates)
   end
 end
 
 class Computer < Player
   def throw(board, human_mark)
-    board.place_mark(mark, board.choose_location(mark, human_mark))
+    board.place_mark(self, mark, board.choose_location(mark, human_mark))
     sleep 1
   end
 end
@@ -39,12 +39,13 @@ class Board
               c: ['-', '-', '-'] }
   end
 
-  def place_mark(mark, coordinates)
+  def place_mark(player, mark, coordinates)
     return slot_not_available(coordinates) unless slot_available(coordinates)
 
     grid[letter(coordinates)][number(coordinates)] = mark
 
     print_board
+    check_for_winner(player)
   end
 
   def slot_available(coordinates)
@@ -226,7 +227,11 @@ class Board
   end
 
   def the_winner_is(last_player)
-    puts "#{last_player.name} wins! Try again? (Y/N)"
+    if last_player.name == "Computer"
+      puts "Computer wins! Try again? (Y/N)"
+    else
+      puts "YOU WIN! Try again? (Y/N)"
+    end
     try_again
   end
 
@@ -272,9 +277,7 @@ class Game
       puts "Introduce a position:"
       input = STDIN.gets.chomp
       human.throw(input, board)
-      board.check_for_winner(human)
       computer.throw(board, human.mark)
-      board.check_for_winner(computer)
     end
   end
 end
