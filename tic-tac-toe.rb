@@ -40,7 +40,7 @@ class Board
   end
 
   def place_mark(player, mark, coordinates)
-    return slot_not_available(coordinates) unless slot_available(coordinates)
+    return slot_not_available(coordinates, player) unless slot_available(coordinates)
 
     grid[letter(coordinates)][number(coordinates)] = mark
 
@@ -52,10 +52,11 @@ class Board
     grid[letter(coordinates)][number(coordinates)] == "-"
   end
 
-  def slot_not_available(coordinates)
+  def slot_not_available(coordinates, player)
     print_board
     puts "The position '#{coordinates}' is already taken."
     puts "\n"
+    introduce_position(player)
   end
 
   def letter(coordinates)
@@ -228,7 +229,7 @@ class Board
         array << true if grid[row][column] == last_player.mark
       end
 
-      return the_winner_is(last_player) if array.length == 3 && array.all?
+      return the_winner_is(last_player) if array.length == 3
     end
   end
 
@@ -272,6 +273,7 @@ class Board
     else
       puts "YOU WIN! Try again? (Y/N)"
     end
+
     try_again
   end
 
@@ -286,6 +288,12 @@ class Board
       puts "Thanks for playing. Hope you liked it!\n\n"
       exit
     end
+  end
+
+  def introduce_position(human)
+    puts "Introduce a position:"
+    input = STDIN.gets.chomp
+    human.throw(input, self)
   end
 
   def print_board
@@ -314,9 +322,7 @@ class Game
   def start
     loop do
       board.print_board
-      puts "Introduce a position:"
-      input = STDIN.gets.chomp
-      human.throw(input, board)
+      board.introduce_position(human)
       computer.throw(board, human.mark)
     end
   end
