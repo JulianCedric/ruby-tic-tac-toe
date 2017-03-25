@@ -59,7 +59,6 @@ class Board
   end
 
   def letter(coordinates)
-    binding.pry
     coordinates[0].to_sym
   end
 
@@ -87,10 +86,19 @@ class Board
       array = []
       columns.each { |column| array << column }
 
+      computer_marks = array.join.count(computer_mark)
+      human_marks    = array.join.count(human_mark)
+      empty_slots    = array.join.count("-")
+
+      break if empty_slots.zero?
+
+      if computer_marks == 2 && human_marks.zero?
+        column = array.index("-") + 1
+        return "#{row}#{column}"
+      end
+
       next if array.any?  { |mark| mark == computer_mark }
       next if array.none? { |mark| mark == human_mark }
-
-      human_marks = array.join.count(human_mark)
       break if iteration.zero? && human_marks != 2
 
       column = array.index("-") + 1
@@ -107,10 +115,19 @@ class Board
         array << grid[row][column]
       end
 
+      computer_marks = array.join.count(computer_mark)
+      human_marks    = array.join.count(human_mark)
+      empty_slots    = array.join.count("-")
+
+      break if empty_slots.zero?
+
+      if computer_marks == 2 && human_marks.zero?
+        row = rows[array.index("-")]
+        return "#{row}#{column + 1}"
+      end
+
       next if array.any?  { |mark| mark == computer_mark }
       next if array.none? { |mark| mark == human_mark }
-
-      human_marks = array.join.count(human_mark)
       break if iteration.zero? && human_marks != 2
 
       row = rows[array.index("-")]
@@ -128,10 +145,20 @@ class Board
         column += 1
       end
 
+      computer_marks = array.join.count(computer_mark)
+      human_marks    = array.join.count(human_mark)
+      empty_slots    = array.join.count("-")
+
+      break if empty_slots.zero?
+
+      if computer_marks == 2 && human_marks.zero?
+        row    = rows[array.index("-")]
+        column = array.index("-") + 1
+        return "#{row}#{column}"
+      end
+
       break if array.any?  { |mark| mark == computer_mark }
       break if array.none? { |mark| mark == human_mark }
-
-      human_marks = array.join.count(human_mark)
       break if iteration.zero? && human_marks != 2
 
       row    = rows[array.index("-")]
@@ -146,10 +173,20 @@ class Board
         column += 1
       end
 
+      computer_marks = array.join.count(computer_mark)
+      human_marks    = array.join.count(human_mark)
+      empty_slots    = array.join.count("-")
+
+      break if empty_slots.zero?
+
+      if computer_marks == 2 && human_marks.zero?
+        row    = rows[array.index("-")]
+        column = array.index("-") + 1
+        return "#{row}#{column}"
+      end
+
       break if array.any?  { |mark| mark == computer_mark }
       break if array.none? { |mark| mark == human_mark }
-
-      human_marks = array.join.count(human_mark)
       break if iteration.zero? && human_marks != 2
 
       row    = rows[array.index("-")]
