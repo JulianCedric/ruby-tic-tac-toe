@@ -19,7 +19,7 @@ class Player
   end
 
   def throw(coordinates, board)
-    board.place_mark(self, mark, coordinates)
+    board.place_mark(mark, coordinates, self)
   end
 end
 
@@ -33,7 +33,7 @@ class Computer < Player
   end
 
   def throw
-    board.place_mark(self, mark, choose_location)
+    board.place_mark(mark, choose_location)
     sleep 1
   end
 
@@ -191,16 +191,14 @@ class Board
     @game = game
   end
 
-  def place_mark(player, mark, coordinates)
+  def place_mark(mark, coordinates, human = false)
     unless slot_available(coordinates)
       slot_not_available(coordinates)
       human.throw(game.introduce_position, self)
     end
 
     grid[letter(coordinates)][number(coordinates)] = mark
-
     print_board
-    check_for_winner(player)
   end
 
   def slot_available(coordinates)
@@ -219,60 +217,6 @@ class Board
 
   def number(coordinates)
     coordinates[1].to_i - 1
-  end
-
-  def check_for_winner(last_player)
-    check_rows(last_player)
-    check_columns(last_player)
-    check_diagonals(last_player)
-
-    game.finish if there_is_no_winner
-  end
-
-  def check_rows(last_player)
-    grid.each_value do |row|
-      game.the_winner_is(last_player) if row.all? { |mark| mark == last_player.mark }
-    end
-  end
-
-  def check_columns(last_player)
-    3.times do |column|
-      array = []
-      grid.each_key do |row|
-        array << true if grid[row][column] == last_player.mark
-      end
-
-      return game.the_winner_is(last_player) if array.length == 3
-    end
-  end
-
-  def check_diagonals(last_player)
-    3.times do |column|
-      array = []
-      grid.each_key do |row|
-        array << true if grid[row][column] == last_player.mark
-        column += 1
-      end
-
-      return game.the_winner_is(last_player) if array.length == 3
-    end
-
-    3.times do |column|
-      array = []
-      grid.map { |key, _value| key }.reverse.each do |row|
-        array << true if grid[row][column] == last_player.mark
-        column += 1
-      end
-
-      return game.the_winner_is(last_player) if array.length == 3
-    end
-  end
-
-  def there_is_no_winner
-    array = []
-    grid.each_value { |value| array << value }
-
-    array.flatten.none? { |slot| slot == "-" }
   end
 
   def print_board
@@ -302,7 +246,9 @@ class Game
     loop do
       board.print_board
       human.throw(introduce_position, board)
+      check_for_winner(human)
       computer.throw
+      check_for_winner(computer)
     end
   end
 
@@ -311,7 +257,60 @@ class Game
     STDIN.gets.chomp
   end
 
-  def finish
+  def check_for_winner(last_player)
+    check_rows(last_player)
+    check_columns(last_player)
+    check_diagonals(last_player)
+
+    finish_game if there_is_no_winner
+  end
+
+  def check_rows(last_player)
+    board.grid.each_value do |row|
+      the_winner_is(last_player) if row.all? { |mark| mark == last_player.mark }
+    end
+  end
+
+  def check_columns(last_player)
+    3.times do |column|
+      array = []
+      board.grid.each_key do |row|
+        array << true if board.grid[row][column] == last_player.mark
+      end
+
+      return the_winner_is(last_player) if array.length == 3
+    end
+  end
+
+  def check_diagonals(last_player)
+    3.times do |column|
+      array = []
+      board.grid.each_key do |row|
+        array << true if board.grid[row][column] == last_player.mark
+        column += 1
+      end
+
+      return the_winner_is(last_player) if array.length == 3
+    end
+
+    3.times do |column|
+      array = []
+      board.grid.map { |key, _value| key }.reverse.each do |row|
+        array << true if board.grid[row][column] == last_player.mark
+        column += 1
+      end
+
+      return the_winner_is(last_player) if array.length == 3
+    end
+  end
+
+  def there_is_no_winner
+    array = []
+    board.grid.each_value { |value| array << value }
+    array.flatten.none? { |slot| slot == "-" }
+  end
+
+  def finish_game
     puts "There's no winner. Try again? (Y/N)"
     try_again
   end
@@ -325,9 +324,7 @@ class Game
   end
 
   def try_again
-    input = STDIN.gets.chomp.downcase
-
-    case input
+    case STDIN.gets.chomp.downcase
     when "y"
       Game.new.start
     when "n"
