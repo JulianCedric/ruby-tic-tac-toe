@@ -182,16 +182,20 @@ class Computer < Player
 end
 
 class Board
-  attr_accessor :grid
+  attr_reader :grid, :game
 
-  def initialize
+  def initialize(game)
     @grid = { a: ['-', '-', '-'],
               b: ['-', '-', '-'],
               c: ['-', '-', '-'] }
+    @game = game
   end
 
   def place_mark(player, mark, coordinates)
-    return slot_not_available(coordinates, player) unless slot_available(coordinates)
+    unless slot_available(coordinates)
+      slot_not_available(coordinates)
+      human.throw(game.introduce_position, self)
+    end
 
     grid[letter(coordinates)][number(coordinates)] = mark
 
@@ -203,11 +207,10 @@ class Board
     grid[letter(coordinates)][number(coordinates)] == "-"
   end
 
-  def slot_not_available(coordinates, player)
+  def slot_not_available(coordinates)
     print_board
     puts "The position '#{coordinates}' is already taken."
     puts "\n"
-    introduce_position(player)
   end
 
   def letter(coordinates)
@@ -223,12 +226,12 @@ class Board
     check_columns(last_player)
     check_diagonals(last_player)
 
-    finish_game if there_is_no_winner
+    game.finish if there_is_no_winner
   end
 
   def check_rows(last_player)
     grid.each_value do |row|
-      the_winner_is(last_player) if row.all? { |mark| mark == last_player.mark }
+      game.the_winner_is(last_player) if row.all? { |mark| mark == last_player.mark }
     end
   end
 
@@ -239,7 +242,7 @@ class Board
         array << true if grid[row][column] == last_player.mark
       end
 
-      return the_winner_is(last_player) if array.length == 3
+      return game.the_winner_is(last_player) if array.length == 3
     end
   end
 
@@ -251,7 +254,7 @@ class Board
         column += 1
       end
 
-      return the_winner_is(last_player) if array.length == 3
+      return game.the_winner_is(last_player) if array.length == 3
     end
 
     3.times do |column|
@@ -261,7 +264,7 @@ class Board
         column += 1
       end
 
-      return the_winner_is(last_player) if array.length == 3
+      return game.the_winner_is(last_player) if array.length == 3
     end
   end
 
@@ -270,40 +273,6 @@ class Board
     grid.each_value { |value| array << value }
 
     array.flatten.none? { |slot| slot == "-" }
-  end
-
-  def finish_game
-    puts "There's no winner. Try again? (Y/N)"
-    try_again
-  end
-
-  def the_winner_is(last_player)
-    if last_player.name == "Computer"
-      puts "Computer wins! Try again? (Y/N)"
-    else
-      puts "YOU WIN! Try again? (Y/N)"
-    end
-
-    try_again
-  end
-
-  def try_again
-    input = STDIN.gets.chomp.downcase
-
-    case input
-    when "y"
-      Game.new.start
-    when "n"
-      system "clear" or system "cls"
-      puts "Thanks for playing. Hope you liked it!\n\n"
-      exit
-    end
-  end
-
-  def introduce_position(human)
-    puts "Introduce a position:"
-    input = STDIN.gets.chomp
-    human.throw(input, self)
   end
 
   def print_board
@@ -321,10 +290,10 @@ class Board
 end
 
 class Game
-  attr_reader :human, :computer, :board
+  attr_reader :board, :human, :computer
 
   def initialize
-    @board    = Board.new
+    @board    = Board.new(self)
     @human    = Player.new("Human", "X")
     @computer = Computer.new("Computer", "O", human.mark, board)
   end
@@ -332,8 +301,39 @@ class Game
   def start
     loop do
       board.print_board
-      board.introduce_position(human)
+      human.throw(introduce_position, board)
       computer.throw
+    end
+  end
+
+  def introduce_position
+    puts "Introduce a position:"
+    STDIN.gets.chomp
+  end
+
+  def finish
+    puts "There's no winner. Try again? (Y/N)"
+    try_again
+  end
+
+  def the_winner_is(last_player)
+    case last_player.name
+    when "Computer" then puts "Computer wins! Try again? (Y/N)"
+    else puts "YOU WIN! Try again? (Y/N)"
+    end
+    try_again
+  end
+
+  def try_again
+    input = STDIN.gets.chomp.downcase
+
+    case input
+    when "y"
+      Game.new.start
+    when "n"
+      system "clear" or system "cls"
+      puts "Thanks for playing. Hope you liked it!\n\n"
+      exit
     end
   end
 end
