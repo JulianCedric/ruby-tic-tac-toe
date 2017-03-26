@@ -149,7 +149,7 @@ class Computer < Player
       break if empty_slots.zero?
 
       if computer_marks == 2 && human_marks.zero?
-        row    = rows[array.index("-")]
+        row    = rows.reverse[array.index("-")]
         column = array.index("-") + 1
         return "#{row}#{column}"
       end
