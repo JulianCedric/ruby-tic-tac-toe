@@ -254,8 +254,16 @@ class Game
   end
 
   def introduce_position
+    board.print_board
     puts "Introduce a position:"
-    STDIN.gets.chomp
+
+    loop do
+      input = STDIN.gets.chomp
+      return input if input =~ /^[a-c][1-3]$/
+
+      board.print_board
+      puts "'#{input}' is not a correct position.\n\nIntroduce a position:"
+    end
   end
 
   def check_for_winner(last_player)
