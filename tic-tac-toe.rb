@@ -24,9 +24,160 @@ class Player
 end
 
 class Computer < Player
-  def throw(board, human_mark)
-    board.place_mark(self, mark, board.choose_location(mark, human_mark))
+  attr_reader :board, :human_mark
+
+  def initialize(name, mark, human_mark, board)
+    super(name, mark)
+    @human_mark = human_mark
+    @board      = board
+  end
+
+  def throw
+    board.place_mark(self, mark, choose_location)
     sleep 1
+  end
+
+  def choose_location
+    2.times do |iteration|
+      match_in_rows = check_rows(iteration)
+      return match_in_rows if match_in_rows
+
+      match_in_columns = check_columns(iteration)
+      return match_in_columns if match_in_columns
+
+      match_in_diagonals = check_diagonals(iteration)
+      return match_in_diagonals if match_in_diagonals
+    end
+
+    choose_random_location
+  end
+
+  def check_rows(iteration)
+    board.grid.each do |row, columns|
+      array = []
+      columns.each { |column| array << column }
+
+      computer_marks = array.join.count(mark)
+      human_marks    = array.join.count(human_mark)
+      empty_slots    = array.join.count("-")
+
+      break if empty_slots.zero?
+
+      if computer_marks == 2 && human_marks.zero?
+        column = array.index("-") + 1
+        return "#{row}#{column}"
+      end
+
+      next if computer_mark_or_no_human_mark(array)
+      break if iteration.zero? && human_marks < 2
+
+      column = array.index("-") + 1
+      return "#{row}#{column}"
+    end
+  end
+
+  def check_columns(iteration)
+    rows = ["a", "b", "c"]
+
+    3.times do |column|
+      array = []
+      board.grid.each_key do |row|
+        array << board.grid[row][column]
+      end
+
+      computer_marks = array.join.count(mark)
+      human_marks    = array.join.count(human_mark)
+      empty_slots    = array.join.count("-")
+
+      break if empty_slots.zero?
+
+      if computer_marks == 2 && human_marks.zero?
+        row = rows[array.index("-")]
+        return "#{row}#{column + 1}"
+      end
+
+      next if computer_mark_or_no_human_mark(array)
+      break if iteration.zero? && human_marks < 2
+
+      row = rows[array.index("-")]
+      return "#{row}#{column + 1}"
+    end
+  end
+
+  def check_diagonals(iteration)
+    rows = ["a", "b", "c"]
+
+    3.times do |column|
+      array = []
+      board.grid.each_key do |row|
+        array << board.grid[row][column]
+        column += 1
+      end
+
+      computer_marks = array.join.count(mark)
+      human_marks    = array.join.count(human_mark)
+      empty_slots    = array.join.count("-")
+
+      break if empty_slots.zero?
+
+      if computer_marks == 2 && human_marks.zero?
+        row    = rows[array.index("-")]
+        column = array.index("-") + 1
+        return "#{row}#{column}"
+      end
+
+      break if computer_mark_or_no_human_mark(array)
+      break if iteration.zero? && human_marks < 2
+
+      row    = rows[array.index("-")]
+      column = array.index("-") + 1
+      return "#{row}#{column}"
+    end
+
+    3.times do |column|
+      array = []
+      board.grid.map { |key, _value| key }.reverse.each do |row|
+        array << board.grid[row][column]
+        column += 1
+      end
+
+      computer_marks = array.join.count(mark)
+      human_marks    = array.join.count(human_mark)
+      empty_slots    = array.join.count("-")
+
+      break if empty_slots.zero?
+
+      if computer_marks == 2 && human_marks.zero?
+        row    = rows[array.index("-")]
+        column = array.index("-") + 1
+        return "#{row}#{column}"
+      end
+
+      break if computer_mark_or_no_human_mark(array)
+      break if iteration.zero? && human_marks < 2
+
+      row    = rows[array.index("-")]
+      column = array.index("-") + 1
+      return "#{row}#{column}"
+    end
+  end
+
+  def computer_mark_or_no_human_mark(array)
+    computer_mark = array.any?  { |mark| mark == self.mark }
+    no_human_mark = array.none? { |mark| mark == human_mark }
+    computer_mark || no_human_mark
+  end
+
+  def choose_random_location
+    rows     = ["a", "b", "c"]
+    columns  = [0, 1, 2]
+
+    loop do
+      row      = rows.sample
+      column   = columns.sample
+      location = board.grid[row.to_sym][column]
+      return "#{row}#{column + 1}" if location == "-"
+    end
   end
 end
 
@@ -65,147 +216,6 @@ class Board
 
   def number(coordinates)
     coordinates[1].to_i - 1
-  end
-
-  def choose_location(computer_mark, human_mark)
-    2.times do |iteration|
-      match_in_rows = check_rows_computer(computer_mark, human_mark, iteration)
-      return match_in_rows if match_in_rows
-
-      match_in_columns = check_columns_computer(computer_mark, human_mark, iteration)
-      return match_in_columns if match_in_columns
-
-      match_in_diagonals = check_diagonals_computer(computer_mark, human_mark, iteration)
-      return match_in_diagonals if match_in_diagonals
-    end
-
-    choose_random_location
-  end
-
-  def check_rows_computer(computer_mark, human_mark, iteration)
-    grid.each do |row, columns|
-      array = []
-      columns.each { |column| array << column }
-
-      computer_marks = array.join.count(computer_mark)
-      human_marks    = array.join.count(human_mark)
-      empty_slots    = array.join.count("-")
-
-      break if empty_slots.zero?
-
-      if computer_marks == 2 && human_marks.zero?
-        column = array.index("-") + 1
-        return "#{row}#{column}"
-      end
-
-      next if array.any?  { |mark| mark == computer_mark }
-      next if array.none? { |mark| mark == human_mark }
-      break if iteration.zero? && human_marks != 2
-
-      column = array.index("-") + 1
-      return "#{row}#{column}"
-    end
-  end
-
-  def check_columns_computer(computer_mark, human_mark, iteration)
-    rows = ["a", "b", "c"]
-
-    3.times do |column|
-      array = []
-      grid.each_key do |row|
-        array << grid[row][column]
-      end
-
-      computer_marks = array.join.count(computer_mark)
-      human_marks    = array.join.count(human_mark)
-      empty_slots    = array.join.count("-")
-
-      break if empty_slots.zero?
-
-      if computer_marks == 2 && human_marks.zero?
-        row = rows[array.index("-")]
-        return "#{row}#{column + 1}"
-      end
-
-      next if array.any?  { |mark| mark == computer_mark }
-      next if array.none? { |mark| mark == human_mark }
-      break if iteration.zero? && human_marks != 2
-
-      row = rows[array.index("-")]
-      return "#{row}#{column + 1}"
-    end
-  end
-
-  def check_diagonals_computer(computer_mark, human_mark, iteration)
-    rows = ["a", "b", "c"]
-
-    3.times do |column|
-      array = []
-      grid.each_key do |row|
-        array << grid[row][column]
-        column += 1
-      end
-
-      computer_marks = array.join.count(computer_mark)
-      human_marks    = array.join.count(human_mark)
-      empty_slots    = array.join.count("-")
-
-      break if empty_slots.zero?
-
-      if computer_marks == 2 && human_marks.zero?
-        row    = rows[array.index("-")]
-        column = array.index("-") + 1
-        return "#{row}#{column}"
-      end
-
-      break if array.any?  { |mark| mark == computer_mark }
-      break if array.none? { |mark| mark == human_mark }
-      break if iteration.zero? && human_marks != 2
-
-      row    = rows[array.index("-")]
-      column = array.index("-") + 1
-      return "#{row}#{column}"
-    end
-
-    3.times do |column|
-      array = []
-      grid.map { |key, _value| key }.reverse.each do |row|
-        array << grid[row][column]
-        column += 1
-      end
-
-      computer_marks = array.join.count(computer_mark)
-      human_marks    = array.join.count(human_mark)
-      empty_slots    = array.join.count("-")
-
-      break if empty_slots.zero?
-
-      if computer_marks == 2 && human_marks.zero?
-        row    = rows[array.index("-")]
-        column = array.index("-") + 1
-        return "#{row}#{column}"
-      end
-
-      break if array.any?  { |mark| mark == computer_mark }
-      break if array.none? { |mark| mark == human_mark }
-      break if iteration.zero? && human_marks != 2
-
-      row    = rows[array.index("-")]
-      column = array.index("-") + 1
-      return "#{row}#{column}"
-    end
-  end
-
-  def choose_random_location
-    rows     = ["a", "b", "c"]
-    columns  = [0, 1, 2]
-
-    loop do
-      row      = rows.sample
-      column   = columns.sample
-      location = grid[row.to_sym][column]
-      return "#{row}#{column + 1}" if location == "-"
-    end
   end
 
   def check_for_winner(last_player)
@@ -314,16 +324,16 @@ class Game
   attr_reader :human, :computer, :board
 
   def initialize
-    @human    = Player.new("Human", "X")
-    @computer = Computer.new("Computer", "O")
     @board    = Board.new
+    @human    = Player.new("Human", "X")
+    @computer = Computer.new("Computer", "O", human.mark, board)
   end
 
   def start
     loop do
       board.print_board
       board.introduce_position(human)
-      computer.throw(board, human.mark)
+      computer.throw
     end
   end
 end
