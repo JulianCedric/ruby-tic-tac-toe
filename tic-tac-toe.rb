@@ -211,8 +211,7 @@ class Board
 
   def slot_not_available(coordinates)
     print_board
-    puts "The position '#{coordinates}' is already taken."
-    puts "\n"
+    puts "The position '#{coordinates}' is already taken.\n\n"
   end
 
   def letter(coordinates)
