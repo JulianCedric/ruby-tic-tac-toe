@@ -325,13 +325,18 @@ class Game
   end
 
   def try_again
-    case STDIN.gets.chomp.downcase
-    when "y"
-      Game.new.start
-    when "n"
-      system "clear" or system "cls"
-      puts "Thanks for playing. Hope you liked it!\n\n"
-      exit
+    loop do
+      case STDIN.gets.chomp.downcase
+      when "y"
+        Game.new.start
+      when "n"
+        system "clear" or system "cls"
+        puts "Thanks for playing. Hope you liked it!\n\n"
+        exit
+      else
+        board.print_board
+        puts "Please type 'Y' or 'N'."
+      end
     end
   end
 end
