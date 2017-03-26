@@ -267,12 +267,17 @@ class Game
     puts "Introduce a position:"
 
     loop do
-      input = STDIN.gets.chomp
-      return input if input =~ /^[a-c][1-3]$/
-      exit_game if input == "exit".downcase
+      begin
+        input = STDIN.gets.chomp
+        return input if input =~ /^[a-c][1-3]$/
+        exit_game if input == "exit".downcase
 
-      board.print_board
-      puts "'#{input}' is not a correct position.\n\nIntroduce a position:"
+        board.print_board
+        puts "'#{input}' is not a correct position.\n\nIntroduce a position:"
+      rescue Interrupt
+        board.print_board
+        exit_game
+      end
     end
   end
 
