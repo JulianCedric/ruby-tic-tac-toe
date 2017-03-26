@@ -33,6 +33,7 @@ class Computer < Player
   end
 
   def throw
+    board.print_board
     puts "Computer turn..."
     sleep (rand(1..2)) * 0.5
     board.place_mark(mark, choose_location)
