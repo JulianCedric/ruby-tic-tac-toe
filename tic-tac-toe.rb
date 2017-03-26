@@ -199,6 +199,8 @@ class Board
       human.throw(game.introduce_position, self)
     end
 
+    return false unless slot_available(coordinates)
+
     grid[letter(coordinates)][number(coordinates)] = mark
     print_board
   end
