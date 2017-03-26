@@ -254,12 +254,12 @@ class Game
   end
 
   def introduce_position
-    board.print_board
     puts "Introduce a position:"
 
     loop do
       input = STDIN.gets.chomp
       return input if input =~ /^[a-c][1-3]$/
+      exit_game if input == "exit".downcase
 
       board.print_board
       puts "'#{input}' is not a correct position.\n\nIntroduce a position:"
@@ -338,14 +338,18 @@ class Game
       when "y"
         Game.new.start
       when "n"
-        system "clear" or system "cls"
-        puts "Thanks for playing. Hope you liked it!\n\n"
-        exit
+        exit_game
       else
         board.print_board
         puts "Please type 'Y' or 'N'."
       end
     end
+  end
+
+  def exit_game
+    system "clear" or system "cls"
+    puts "Thanks for playing. Hope you liked it!\n\n"
+    exit
   end
 end
 
