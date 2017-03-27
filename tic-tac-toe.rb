@@ -11,7 +11,8 @@
 require 'pry'
 
 class Player
-  attr_reader :name, :mark
+  attr_accessor :name
+  attr_reader   :mark
 
   def initialize(name, mark)
     @name = name
@@ -184,7 +185,8 @@ class Computer < Player
 end
 
 class Board
-  attr_reader :grid, :game
+  attr_accessor :grid
+  attr_reader   :game
 
   def initialize(game)
     @grid = { a: ['-', '-', '-'],
@@ -193,10 +195,16 @@ class Board
     @game = game
   end
 
+  def reset_grid
+    self.grid = { a: ['-', '-', '-'],
+                  b: ['-', '-', '-'],
+                  c: ['-', '-', '-'] }
+  end
+
   def place_mark(mark, coordinates, human = false)
     unless slot_available(coordinates)
       slot_not_available(coordinates)
-      human.throw(game.introduce_position, self)
+      human.throw(game.introduce_position(human), self)
     end
 
     return false unless slot_available(coordinates)
@@ -245,26 +253,56 @@ class Board
 end
 
 class Game
-  attr_reader :board, :human, :computer
+  attr_reader   :board, :computer
+  attr_accessor :players, :human1, :human2
 
   def initialize
     @board    = Board.new(self)
-    @human    = Player.new("Human", "X")
-    @computer = Computer.new("Computer", "O", human.mark, board)
+    @players  = 1
+    @human1   = Player.new("Human 1", "X")
+    @human2   = Player.new("Human 2", "O")
+    @computer = Computer.new("Computer", "O", human1.mark, board)
+  end
+
+  def setup
+    board.print_board
+    puts "Choose players, 1 or 2?"
+    input = STDIN.gets.chomp
+    self.players = input.to_i
+
+    start if players == 1
+
+    board.print_board
+    puts "Player 1 name:"
+    human1.name = STDIN.gets.chomp
+    board.print_board
+    puts "Player 2 name:"
+    human2.name = STDIN.gets.chomp
+
+    start
   end
 
   def start
     loop do
       board.print_board
-      human.throw(introduce_position, board)
-      check_for_winner(human)
-      computer.throw
-      check_for_winner(computer)
+      human1.throw(introduce_position(human1), board)
+      check_for_winner(human1)
+      if players == 1
+        computer.throw
+        check_for_winner(computer)
+      else
+        human2.throw(introduce_position(human2), board)
+        check_for_winner(human2)
+      end
     end
   end
 
-  def introduce_position
-    puts "Introduce a position:"
+  def introduce_position(player = computer)
+    if players == 1
+      puts "Introduce a position:"
+    else
+      puts "#{player.name}, introduce a position:"
+    end
 
     loop do
       begin
@@ -342,7 +380,8 @@ class Game
   def the_winner_is(last_player)
     case last_player.name
     when "Computer" then puts "Computer wins! Try again? (Y/N)"
-    else puts "YOU WIN! Try again? (Y/N)"
+    when "Human 1"  then puts "YOU WIN! Try again? (Y/N)"
+    else puts "#{last_player.name} wins! Try again? (Y/N)"
     end
     try_again
   end
@@ -351,7 +390,8 @@ class Game
     loop do
       case STDIN.gets.chomp.downcase
       when "y"
-        Game.new.start
+        board.reset_grid
+        start
       when "n"
         exit_game
       else
@@ -368,4 +408,4 @@ class Game
   end
 end
 
-Game.new.start
+Game.new.setup
