@@ -8,8 +8,6 @@
 #
 # Wikipedia: https://en.wikipedia.org/wiki/Tic-tac-toe
 
-require 'pry'
-
 class Player
   attr_accessor :name
   attr_reader   :mark
