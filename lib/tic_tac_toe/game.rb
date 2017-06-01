@@ -43,6 +43,8 @@ class Game
     end
   end
 
+  private
+
   def introduce_position(player = computer)
     if players == 1
       puts "Introduce a position:"
