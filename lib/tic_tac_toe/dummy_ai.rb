@@ -1,22 +1,25 @@
 class DummyAI
-  attr_reader :board, :human_mark, :mark
+  attr_reader :board, :human_mark, :computer_mark
+  attr_reader :row_checker, :column_checker, :diagonal_checker
 
   def initialize(computer, board, human_mark)
-    @computer   = computer
-    @mark       = computer.mark
-    @board      = board
-    @human_mark = human_mark
+    @board            = board
+    @human_mark       = human_mark
+    @computer_mark    = computer.mark
+    @row_checker      = RowChecker.new(computer, board, human_mark)
+    @column_checker   = ColumnChecker.new(computer, board, human_mark)
+    @diagonal_checker = DiagonalChecker.new(computer, board, human_mark)
   end
 
   def choose_location
     2.times do |iteration|
-      match_in_rows = check_rows(iteration)
+      match_in_rows = row_checker.check_rows(iteration)
       return match_in_rows if match_in_rows
 
-      match_in_columns = check_columns(iteration)
+      match_in_columns = column_checker.check_columns(iteration)
       return match_in_columns if match_in_columns
 
-      match_in_diagonals = check_diagonals(iteration)
+      match_in_diagonals = diagonal_checker.check_diagonals(iteration)
       return match_in_diagonals if match_in_diagonals
     end
 
@@ -25,118 +28,8 @@ class DummyAI
 
   private
 
-  def check_rows(iteration)
-    board.grid.each do |row, columns|
-      array = []
-      columns.each { |column| array << column }
-
-      computer_marks = array.join.count(mark)
-      human_marks    = array.join.count(human_mark)
-      empty_slots    = array.join.count("-")
-
-      break if empty_slots.zero?
-
-      if computer_marks == 2 && human_marks.zero?
-        column = array.index("-") + 1
-        return "#{row}#{column}"
-      end
-
-      next if computer_mark_or_no_human_mark(array)
-      break if iteration.zero? && human_marks < 2
-
-      column = array.index("-") + 1
-      return "#{row}#{column}"
-    end
-  end
-
-  def check_columns(iteration)
-    rows = ["a", "b", "c"]
-
-    3.times do |column|
-      array = []
-      board.grid.each_key do |row|
-        array << board.grid[row][column]
-      end
-
-      computer_marks = array.join.count(mark)
-      human_marks    = array.join.count(human_mark)
-      empty_slots    = array.join.count("-")
-
-      break if empty_slots.zero?
-
-      if computer_marks == 2 && human_marks.zero?
-        row = rows[array.index("-")]
-        return "#{row}#{column + 1}"
-      end
-
-      next if computer_mark_or_no_human_mark(array)
-      break if iteration.zero? && human_marks < 2
-
-      row = rows[array.index("-")]
-      return "#{row}#{column + 1}"
-    end
-  end
-
-  def check_diagonals(iteration)
-    rows = ["a", "b", "c"]
-
-    3.times do |column|
-      array = []
-      board.grid.each_key do |row|
-        array << board.grid[row][column]
-        column += 1
-      end
-
-      computer_marks = array.join.count(mark)
-      human_marks    = array.join.count(human_mark)
-      empty_slots    = array.join.count("-")
-
-      break if empty_slots.zero?
-
-      if computer_marks == 2 && human_marks.zero?
-        row    = rows[array.index("-")]
-        column = array.index("-") + 1
-        return "#{row}#{column}"
-      end
-
-      break if computer_mark_or_no_human_mark(array)
-      break if iteration.zero? && human_marks < 2
-
-      row    = rows[array.index("-")]
-      column = array.index("-") + 1
-      return "#{row}#{column}"
-    end
-
-    3.times do |column|
-      array = []
-      board.grid.map { |key, _value| key }.reverse.each do |row|
-        array << board.grid[row][column]
-        column += 1
-      end
-
-      computer_marks = array.join.count(mark)
-      human_marks    = array.join.count(human_mark)
-      empty_slots    = array.join.count("-")
-
-      break if empty_slots.zero?
-
-      if computer_marks == 2 && human_marks.zero?
-        row    = rows.reverse[array.index("-")]
-        column = array.index("-") + 1
-        return "#{row}#{column}"
-      end
-
-      break if computer_mark_or_no_human_mark(array)
-      break if iteration.zero? && human_marks < 2
-
-      row    = rows[array.index("-")]
-      column = array.index("-") + 1
-      return "#{row}#{column}"
-    end
-  end
-
   def computer_mark_or_no_human_mark(array)
-    computer_mark = array.any?  { |m| m == mark }
+    computer_mark = array.any?  { |m| m == computer_mark }
     no_human_mark = array.none? { |m| m == human_mark }
     computer_mark || no_human_mark
   end

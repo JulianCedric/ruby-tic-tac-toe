@@ -1,5 +1,3 @@
-require_relative "dummy_ai"
-
 class Computer < Player
   attr_reader :board, :human_mark, :dummy_ai
 
