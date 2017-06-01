@@ -3,16 +3,8 @@ class Board
   attr_reader   :game
 
   def initialize(game)
-    @grid = { a: ['-', '-', '-'],
-              b: ['-', '-', '-'],
-              c: ['-', '-', '-'] }
+    create_grid
     @game = game
-  end
-
-  def reset_grid
-    self.grid = { a: ['-', '-', '-'],
-                  b: ['-', '-', '-'],
-                  c: ['-', '-', '-'] }
   end
 
   def place_mark(mark, coordinates, human = false)
@@ -20,24 +12,6 @@ class Board
       slot_available?(coordinates)
 
     grid[letter(coordinates)][number(coordinates)] = mark
-  end
-
-  def slot_available?(coordinates)
-    grid[letter(coordinates)][number(coordinates)] == "-"
-  end
-
-  def slot_not_available(coordinates, human)
-    print_board
-    puts "The position '#{coordinates}' is already taken.\n\n"
-    game.retry_turn(human)
-  end
-
-  def letter(coordinates)
-    coordinates[0].to_sym
-  end
-
-  def number(coordinates)
-    coordinates[1].to_i - 1
   end
 
   def print_board
@@ -59,5 +33,35 @@ class Board
     puts "   ------------"
     puts " c | #{grid[:c][0]}   #{grid[:c][1]}   #{grid[:c][2]} |"
     puts "\n"
+  end
+
+  def reset_grid
+    create_grid
+  end
+
+  private
+
+  def create_grid
+    @grid = { a: ['-', '-', '-'],
+              b: ['-', '-', '-'],
+              c: ['-', '-', '-'] }
+  end
+
+  def slot_available?(coordinates)
+    grid[letter(coordinates)][number(coordinates)] == "-"
+  end
+
+  def slot_not_available(coordinates, human)
+    print_board
+    puts "The position '#{coordinates}' is already taken.\n\n"
+    game.retry_turn(human)
+  end
+
+  def letter(coordinates)
+    coordinates[0].to_sym
+  end
+
+  def number(coordinates)
+    coordinates[1].to_i - 1
   end
 end
