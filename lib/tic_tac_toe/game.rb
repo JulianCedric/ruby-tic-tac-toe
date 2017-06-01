@@ -146,11 +146,13 @@ class Game
   end
 
   def finish_game
+    board.print_board
     puts "There's no winner. Try again? (Y/N)"
     try_again
   end
 
   def the_winner_is(last_player)
+    board.print_board
     case last_player.name
     when "Computer" then puts "Computer wins! Try again? (Y/N)"
     when "Human 1"  then puts "YOU WIN! Try again? (Y/N)"
