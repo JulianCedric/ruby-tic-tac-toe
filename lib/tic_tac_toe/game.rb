@@ -22,10 +22,17 @@ class Game
     loop do
       board.print_board
       first_turn
+      board.print_board
       second_turn
     end
   rescue Interrupt
     exit_game
+  end
+
+  def retry_turn(player)
+    position = introduce_position(player)
+    player.throw(position, board)
+    check_for_winner(player)
   end
 
   private
