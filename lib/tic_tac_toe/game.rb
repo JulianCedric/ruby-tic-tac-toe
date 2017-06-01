@@ -11,20 +11,8 @@ class Game
   end
 
   def setup
-    board.print_board
-    puts "Choose players, 1 or 2?"
-    input = STDIN.gets.chomp
-    self.players = input.to_i
-
-    start if players == 1
-
-    board.print_board
-    puts "Player 1 name:"
-    human1.name = STDIN.gets.chomp
-    board.print_board
-    puts "Player 2 name:"
-    human2.name = STDIN.gets.chomp
-
+    choose_players
+    ask_players_names if players == 2
     start
   end
 
@@ -44,6 +32,22 @@ class Game
   end
 
   private
+
+  def choose_players
+    board.print_board
+    puts "Choose players, 1 or 2?"
+    input = STDIN.gets.chomp
+    self.players = input.to_i
+  end
+
+  def ask_players_names
+    board.print_board
+    puts "Player 1 name:"
+    human1.name = STDIN.gets.chomp
+    board.print_board
+    puts "Player 2 name:"
+    human2.name = STDIN.gets.chomp
+  end
 
   def introduce_position(player = computer)
     if players == 1
