@@ -76,19 +76,18 @@ class Game
     else
       puts "#{player.name}, introduce a position:"
     end
+    check_inputted_position
+  end
 
+  def check_inputted_position
     loop do
-      begin
-        input = STDIN.gets.chomp
-        return input if input =~ /^[a-c][1-3]$/
-        exit_game if input == "exit".downcase
+      input = STDIN.gets.chomp
 
-        board.print_board
-        puts "'#{input}' is not a correct position.\n\nIntroduce a position:"
-      rescue Interrupt
-        board.print_board
-        exit_game
-      end
+      return input if input =~ /^[a-c][1-3]$/
+      exit_game    if input == "exit".downcase
+
+      board.print_board
+      puts "'#{input}' is not a correct position.\n\nIntroduce a position:"
     end
   end
 
