@@ -13,12 +13,12 @@ class Game
   def setup
     choose_players
     ask_players_names if players == 2
-    start
+    start_game
   rescue Interrupt
     exit_game
   end
 
-  def start
+  def start_game
     loop do
       board.print_board
       first_turn
@@ -157,7 +157,7 @@ class Game
       case STDIN.gets.chomp.downcase
       when "y"
         board.reset_grid
-        start
+        start_game
       when "n"
         exit_game
       else
