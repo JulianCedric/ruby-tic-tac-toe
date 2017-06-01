@@ -14,6 +14,8 @@ class Game
     choose_players
     ask_players_names if players == 2
     start
+  rescue Interrupt
+    exit_game
   end
 
   def start
@@ -22,6 +24,8 @@ class Game
       first_turn
       second_turn
     end
+  rescue Interrupt
+    exit_game
   end
 
   private
