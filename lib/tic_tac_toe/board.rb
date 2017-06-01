@@ -16,24 +16,20 @@ class Board
   end
 
   def place_mark(mark, coordinates, human = false)
-    unless slot_available(coordinates)
-      slot_not_available(coordinates)
-      human.throw(game.introduce_position(human), self)
-    end
-
-    return false unless slot_available(coordinates)
+    return slot_not_available(coordinates, human) unless
+      slot_available?(coordinates)
 
     grid[letter(coordinates)][number(coordinates)] = mark
-    print_board
   end
 
-  def slot_available(coordinates)
+  def slot_available?(coordinates)
     grid[letter(coordinates)][number(coordinates)] == "-"
   end
 
-  def slot_not_available(coordinates)
+  def slot_not_available(coordinates, human)
     print_board
     puts "The position '#{coordinates}' is already taken.\n\n"
+    game.retry_turn(human)
   end
 
   def letter(coordinates)
