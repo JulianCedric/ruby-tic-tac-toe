@@ -30,7 +30,7 @@ class Game
   end
 
   def retry_turn(player)
-    position = introduce_position(player)
+    position = ask_for_position(player)
     player.throw(position, board)
     check_for_winner(player)
   end
@@ -54,7 +54,7 @@ class Game
   end
 
   def first_turn
-    position = introduce_position(human1)
+    position = ask_for_position(human1)
     human1.throw(position, board)
     check_for_winner(human1)
   end
@@ -64,13 +64,13 @@ class Game
       computer.throw
       check_for_winner(computer)
     else
-      position = introduce_position(human2)
+      position = ask_for_position(human2)
       human2.throw(position, board)
       check_for_winner(human2)
     end
   end
 
-  def introduce_position(player = computer)
+  def ask_for_position(player = computer)
     if players == 1
       puts "Introduce a position:"
     else
