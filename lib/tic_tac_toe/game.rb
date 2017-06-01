@@ -19,15 +19,8 @@ class Game
   def start
     loop do
       board.print_board
-      human1.throw(introduce_position(human1), board)
-      check_for_winner(human1)
-      if players == 1
-        computer.throw
-        check_for_winner(computer)
-      else
-        human2.throw(introduce_position(human2), board)
-        check_for_winner(human2)
-      end
+      first_turn
+      second_turn
     end
   end
 
@@ -47,6 +40,23 @@ class Game
     board.print_board
     puts "Player 2 name:"
     human2.name = STDIN.gets.chomp
+  end
+
+  def first_turn
+    position = introduce_position(human1)
+    human1.throw(position, board)
+    check_for_winner(human1)
+  end
+
+  def second_turn
+    if players == 1
+      computer.throw
+      check_for_winner(computer)
+    else
+      position = introduce_position(human2)
+      human2.throw(position, board)
+      check_for_winner(human2)
+    end
   end
 
   def introduce_position(player = computer)
