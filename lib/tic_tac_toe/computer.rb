@@ -14,6 +14,8 @@ class Computer < Player
     board.place_mark(mark, choose_location)
   end
 
+  private
+
   def choose_location
     2.times do |iteration|
       match_in_rows = check_rows(iteration)
