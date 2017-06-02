@@ -1,6 +1,7 @@
 require_relative "tic_tac_toe/game"
 require_relative "tic_tac_toe/printer"
 require_relative "tic_tac_toe/board"
+require_relative "tic_tac_toe/judge"
 require_relative "tic_tac_toe/player"
 require_relative "tic_tac_toe/computer"
 
