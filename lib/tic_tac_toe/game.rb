@@ -1,9 +1,10 @@
 class Game
-  attr_reader   :board, :computer
+  attr_reader   :board, :printer, :computer
   attr_accessor :players, :human1, :human2
 
   def initialize
     @board    = Board.new(self)
+    @printer  = board.printer
     @players  = 1
     @human1   = Player.new("Human 1", "X")
     @human2   = Player.new("Human 2", "O")
@@ -20,9 +21,9 @@ class Game
 
   def start_game
     loop do
-      board.print_board
+      printer.print_board
       first_turn
-      board.print_board
+      printer.print_board
       second_turn
     end
   rescue Interrupt
@@ -38,17 +39,17 @@ class Game
   private
 
   def choose_players
-    board.print_board
+    printer.print_board
     puts "Choose players, 1 or 2?"
     input = STDIN.gets.chomp
     self.players = input.to_i
   end
 
   def ask_players_names
-    board.print_board
+    printer.print_board
     puts "Player 1 name:"
     human1.name = STDIN.gets.chomp
-    board.print_board
+    printer.print_board
     puts "Player 2 name:"
     human2.name = STDIN.gets.chomp
   end
@@ -86,7 +87,7 @@ class Game
       return input if input =~ /^[a-c][1-3]$/
       exit_game    if input == "exit".downcase
 
-      board.print_board
+      printer.print_board
       puts "'#{input}' is not a correct position.\n\nIntroduce a position:"
     end
   end
@@ -145,13 +146,13 @@ class Game
   end
 
   def finish_game
-    board.print_board
+    printer.print_board
     puts "There's no winner. Try again? (Y/N)"
     try_again
   end
 
   def the_winner_is(last_player)
-    board.print_board
+    printer.print_board
     case last_player.name
     when "Computer" then puts "Computer wins! Try again? (Y/N)"
     when "Human 1"  then puts "YOU WIN! Try again? (Y/N)"
@@ -176,7 +177,7 @@ class Game
   end
 
   def type_yes_or_no
-    board.print_board
+    printer.print_board
     puts "Please type 'Y' or 'N'."
   end
 

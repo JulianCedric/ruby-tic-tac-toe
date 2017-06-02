@@ -1,15 +1,16 @@
 class Computer < Player
-  attr_reader :board, :human, :ai
+  attr_reader :board, :printer, :human, :ai
 
   def initialize(name, mark, human, board)
     super(name, mark)
-    @board = board
-    @human = human
-    @ai    = AI.new(self, board, human)
+    @board   = board
+    @printer = board.printer
+    @human   = human
+    @ai      = AI.new(self, board, human)
   end
 
   def throw
-    board.print_board
+    printer.print_board
     puts "Computer turn..."
     sleep rand(1..2) * 0.5
     location = ai.choose_location
