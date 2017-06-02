@@ -7,7 +7,7 @@ class Game
     @players  = 1
     @human1   = Player.new("Human 1", "X")
     @human2   = Player.new("Human 2", "O")
-    @computer = Computer.new("Computer", "O", human1.mark, board)
+    @computer = Computer.new("Computer", "O", human1, board)
   end
 
   def setup
@@ -172,7 +172,7 @@ class Game
 
   def restart_game
     board.reset_grid
-    start_game
+    Game.new.setup
   end
 
   def type_yes_or_no

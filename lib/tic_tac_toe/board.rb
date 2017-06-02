@@ -35,6 +35,10 @@ class Board
     puts "\n"
   end
 
+  def slot_available?(coordinates)
+    grid[letter(coordinates)][number(coordinates)] == "-"
+  end
+
   def reset_grid
     create_grid
   end
@@ -45,10 +49,6 @@ class Board
     @grid = { a: ['-', '-', '-'],
               b: ['-', '-', '-'],
               c: ['-', '-', '-'] }
-  end
-
-  def slot_available?(coordinates)
-    grid[letter(coordinates)][number(coordinates)] == "-"
   end
 
   def slot_not_available(coordinates, human)
