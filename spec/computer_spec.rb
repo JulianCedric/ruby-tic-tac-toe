@@ -4,6 +4,8 @@ describe Computer do
   let(:game)     { Game.new }
   let(:computer) { game.computer }
   let(:board)    { game.board }
+  let(:printer)  { game.printer }
+  let(:ai)       { computer.ai }
 
   describe "attributes" do
     it "has a name" do
@@ -14,18 +16,22 @@ describe Computer do
       expect(computer.mark).to eql("O")
     end
 
-    it "knows about human mark" do
-      expect(computer.human_mark).to eql("X")
+    it "knows about human" do
+      raise unless computer.human
     end
 
     it "knows about board" do
       raise unless computer.board.grid
     end
+
+    it "has an AI" do
+      expect(ai).to be_an(AI)
+    end
   end
 
   describe "#throw" do
     before do
-      expect(board).to receive(:print_board).twice
+      expect(printer).to receive(:print_board)
       expect(STDOUT).to receive(:puts).with("Computer turn...")
       expect(computer).to receive(:sleep)
     end
@@ -42,8 +48,8 @@ describe Computer do
 
     context "with two computer marks in a column" do
       it "adds mark in line and wins" do
-        board.grid = { a: %w[O X O],
-                       b: %w[- - X],
+        board.grid = { a: %w[O X X],
+                       b: %w[- - O],
                        c: %w[O X X] }
         computer.throw
         expect(board.grid[:b][0]).to eql("O")
@@ -80,7 +86,7 @@ describe Computer do
       end
     end
 
-    context "with two computer marks in a diagonal" do
+    context "with two human marks in a diagonal" do
       it "adds mark in between" do
         board.grid = { a: %w[X O O],
                        b: %w[- - X],
