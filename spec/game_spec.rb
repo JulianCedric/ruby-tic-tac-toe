@@ -13,7 +13,7 @@ describe Game do
     end
 
     it "knows about printer" do
-      expect(game).to respond_to(:printer)
+      expect(printer).to be_a(Printer)
     end
 
     it "has a judge" do
