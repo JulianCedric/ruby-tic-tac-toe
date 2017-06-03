@@ -15,6 +15,7 @@ describe Printer do
       allow(printer).to receive(:system).with("cls")
       allow(printer).to receive(:puts).exactly(17).times
       printer.print_board
+      expect(printer).to have_received(:puts).exactly(17).times
     end
   end
 end
