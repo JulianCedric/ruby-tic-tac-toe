@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe Computer do
   let(:game)     { Game.new }
   let(:computer) { game.computer }
@@ -17,11 +15,11 @@ describe Computer do
     end
 
     it "knows about human" do
-      raise unless computer.human
+      expect(computer.human).to be_a(Player)
     end
 
     it "knows about board" do
-      raise unless computer.board.grid
+      expect(board).to be_a(Board)
     end
 
     it "has an AI" do
@@ -31,9 +29,9 @@ describe Computer do
 
   describe "#throw" do
     before do
-      expect(printer).to receive(:print_board)
-      expect(STDOUT).to receive(:puts).with("Computer turn...")
-      expect(computer).to receive(:sleep)
+      allow(printer).to receive(:print_board)
+      allow(STDOUT).to receive(:puts).with("Computer turn...")
+      allow(computer).to receive(:sleep)
     end
 
     context "with two computer marks in a row" do
