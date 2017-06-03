@@ -36,9 +36,7 @@ describe Computer do
 
     context "with two computer marks in a row" do
       it "adds mark in line and wins" do
-        board.grid = { a: %w[O - O],
-                       b: %w[X - X],
-                       c: %w[X O X] }
+        board.grid = { a: %w[O - O], b: %w[X - X], c: %w[X O X] }
         computer.throw
         expect(board.grid[:a][1]).to eql("O")
       end
@@ -46,9 +44,7 @@ describe Computer do
 
     context "with two computer marks in a column" do
       it "adds mark in line and wins" do
-        board.grid = { a: %w[O X X],
-                       b: %w[- - O],
-                       c: %w[O X X] }
+        board.grid = { a: %w[O X X], b: %w[- - O], c: %w[O X X] }
         computer.throw
         expect(board.grid[:b][0]).to eql("O")
       end
@@ -56,9 +52,7 @@ describe Computer do
 
     context "with two computer marks in a diagonal" do
       it "adds mark in line and wins" do
-        board.grid = { a: %w[O X O],
-                       b: %w[X - X],
-                       c: %w[- X O] }
+        board.grid = { a: %w[O X O], b: %w[X - X], c: %w[- X O] }
         computer.throw
         expect(board.grid[:b][1]).to eql("O")
       end
@@ -66,9 +60,7 @@ describe Computer do
 
     context "with two human marks in a row" do
       it "adds mark in between" do
-        board.grid = { a: %w[- - O],
-                       b: %w[O - X],
-                       c: %w[X - X] }
+        board.grid = { a: %w[- - O], b: %w[O - X], c: %w[X - X] }
         computer.throw
         expect(board.grid[:c][1]).to eql("O")
       end
@@ -76,9 +68,7 @@ describe Computer do
 
     context "with two human marks in a column" do
       it "adds mark in between" do
-        board.grid = { a: %w[O X O],
-                       b: %w[- - O],
-                       c: %w[- X X] }
+        board.grid = { a: %w[O X O], b: %w[- - O], c: %w[- X X] }
         computer.throw
         expect(board.grid[:b][1]).to eql("O")
       end
@@ -86,9 +76,7 @@ describe Computer do
 
     context "with two human marks in a diagonal" do
       it "adds mark in between" do
-        board.grid = { a: %w[X O O],
-                       b: %w[- - X],
-                       c: %w[- - X] }
+        board.grid = { a: %w[X O O], b: %w[- - X], c: %w[- - X] }
         computer.throw
         expect(board.grid[:b][1]).to eql("O")
       end
