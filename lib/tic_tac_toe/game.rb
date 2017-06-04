@@ -99,10 +99,10 @@ class Game
     else
       puts "#{player.name}, introduce a position:"
     end
-    check_inputted_position
+    check_position_input
   end
 
-  def check_inputted_position
+  def check_position_input
     loop do
       input = STDIN.gets.chomp
 
