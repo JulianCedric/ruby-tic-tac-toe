@@ -52,8 +52,19 @@ class Game
   def choose_players
     printer.print_board
     puts "Choose players, 1 or 2?"
-    input = STDIN.gets.chomp
-    self.players = input.to_i
+    check_players_input
+  end
+
+  def check_players_input
+    loop do
+      input = STDIN.gets.chomp
+
+      return self.players = input.to_i if input =~ /^[1-2]$/
+      exit_game                        if input == "exit".downcase
+
+      printer.print_board
+      puts "Please introduce 1 or 2:"
+    end
   end
 
   def ask_players_names
